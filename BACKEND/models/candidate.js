@@ -22,7 +22,7 @@ const candidateSchema = new mongoose.Schema({
             },
             votedAt:{
                 type:Date,
-                default:DataView.now()
+                default:Date.now()
             }
         }
     ],
