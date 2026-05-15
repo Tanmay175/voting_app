@@ -38,6 +38,27 @@ router.post('/', jwtAuthMiddleware, async (req, res) =>{
     }
 })
 
+// vote count 
+router.get('/vote/count', async (req, res) => {
+    try{
+        // Find all candidates and sort them by voteCount in descending order
+        const candidate = await Candidate.find().sort({voteCount: 'desc'});
+
+        // Map the candidates to only return their name and voteCount
+        const voteRecord = candidate.map((data)=>{
+            return {
+                party: data.party,
+                count: data.voteCount
+            }
+        });
+
+        return res.status(200).json(voteRecord);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({error: 'Internal Server Error'});
+    }
+});
+
 router.put('/:candidateID', jwtAuthMiddleware, async (req, res)=>{
     try{
         if(!checkAdminRole(req.user.id))
@@ -89,8 +110,8 @@ router.get('/vote/:candidateID', jwtAuthMiddleware, async (req, res)=>{
     // no admin can vote
     // user can only vote once
     
-    candidateID = req.params.candidateID;
-    userId = req.user.id;
+    const candidateID = req.params.candidateID;
+    const userId = req.user.id;
 
     try{
         // Find the Candidate document with the specified candidateID
@@ -123,27 +144,6 @@ router.get('/vote/:candidateID', jwtAuthMiddleware, async (req, res)=>{
     }catch(err){
         console.log(err);
         return res.status(500).json({error: 'Internal Server Error'});
-    }
-});
-
-// vote count 
-router.get('/vote/count', async (req, res) => {
-    try{
-        // Find all candidates and sort them by voteCount in descending order
-        const candidate = await Candidate.find().sort({voteCount: 'desc'});
-
-        // Map the candidates to only return their name and voteCount
-        const voteRecord = candidate.map((data)=>{
-            return {
-                party: data.party,
-                count: data.voteCount
-            }
-        });
-
-        return res.status(200).json(voteRecord);
-    }catch(err){
-        console.log(err);
-        res.status(500).json({error: 'Internal Server Error'});
     }
 });
 
