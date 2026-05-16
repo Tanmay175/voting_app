@@ -1,8 +1,9 @@
 import express from "express"
-const router = express.Router();
 import User from '../models/user.js';
 import {jwtAuthMiddleware, generateToken} from '../jwt.js';
 import Candidate from'../models/candidate.js';
+
+const router = express.Router();
 
 
 const checkAdminRole = async (userID) => {
@@ -151,7 +152,7 @@ router.get('/vote/:candidateID', jwtAuthMiddleware, async (req, res)=>{
 router.get('/', async (req, res) => {
     try {
         // Find all candidates and select only the name and party fields, excluding _id
-        const candidates = await Candidate.find({}, 'name party -_id');
+        const candidates = await Candidate.find({}, 'name party ');
 
         // Return the list of candidates
         res.status(200).json(candidates);
